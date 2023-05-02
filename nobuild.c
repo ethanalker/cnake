@@ -2,6 +2,7 @@
 #include "./nobuild.h"
 
 // this build assumes linux/cygwin, if you use windows, don't
+// nobuild does support windows, i didn't bother
 
 #define CLIBS "-lm", "-lncurses"
 #define CFLAGS "-Wall", "-Wextra", "-std=c99", "-pedantic"
@@ -13,12 +14,18 @@
 void build(void)
 {
     Cstr_Array objs = cstr_array_make("");
+    int needs_built = 0;
     FOREACH_FILE_IN_DIR(file, OBJDIR, {
         if (ENDS_WITH(file, ".o")) {
             objs = cstr_array_append(objs, PATH(OBJDIR, file));
+            if (is_path1_modified_after_path2(PATH(OBJDIR, file), EXECNAME))
+                needs_built = 1;
         }
     });
-    CMD(CC, CFLAGS, CLIBS, "-o", EXECNAME, cstr_array_join("", objs));
+    if (needs_built)
+        CMD(CC, CFLAGS, CLIBS, "-o", EXECNAME, cstr_array_join("", objs));
+    else
+        puts("Executable up-to-date");
 }
 
 void build_object(const char *file)
