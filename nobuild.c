@@ -4,8 +4,8 @@
 // this build assumes linux/cygwin, if you use windows, don't
 // nobuild does support windows, i didn't bother
 
-#define CLIBS "-lm", "-lncurses"
-#define CFLAGS "-Wall", "-Wextra", "-std=c99", "-pedantic"
+#define CLIBS "-lm"
+#define CFLAGS "-Wall", "-Wextra", "-std=gnu99", "-pedantic", "-g"
 #define CC "gcc"
 #define SRCDIR "src"
 #define OBJDIR "obj"
@@ -13,27 +13,26 @@
 
 void build(void)
 {
-    Cstr_Array objs = cstr_array_make("");
+    Cmd cmd = {
+        .line = cstr_array_make(CC, CFLAGS, CLIBS, "-o", EXECNAME, NULL)
+    };
     int needs_built = 0;
     FOREACH_FILE_IN_DIR(file, OBJDIR, {
         if (ENDS_WITH(file, ".o")) {
-            objs = cstr_array_append(objs, PATH(OBJDIR, file));
-            if (is_path1_modified_after_path2(PATH(OBJDIR, file), EXECNAME))
+            cmd.line = cstr_array_append(cmd.line, PATH(OBJDIR, file));
+            if (!PATH_EXISTS(EXECNAME)) {
                 needs_built = 1;
+            } else {
+                if (is_path1_modified_after_path2(PATH(OBJDIR, file), EXECNAME))
+                    needs_built = 1;
+            }
         }
     });
-    if (needs_built)
-        CMD(CC, CFLAGS, CLIBS, "-o", EXECNAME, cstr_array_join("", objs));
-    else
+    if (needs_built) {
+        INFO("CMD: %s", cmd_show(cmd));
+        cmd_run_sync(cmd);
+    } else {
         puts("Executable up-to-date");
-}
-
-void build_object(const char *file)
-{
-    Cstr src_path = PATH(SRCDIR, file);
-    Cstr obj_path = PATH(OBJDIR, CONCAT(NOEXT(file), ".o")); 
-    if (!PATH_EXISTS(obj_path) || is_path1_modified_after_path2(src_path, obj_path)) {
-        CMD(CC, CFLAGS, CLIBS, "-c", "-o", obj_path, src_path);
     }
 }
 
@@ -41,7 +40,21 @@ void build_objects(void)
 {
     FOREACH_FILE_IN_DIR(file, SRCDIR, {
         if (ENDS_WITH(file, ".c")) {
-            build_object(file);
+            Cstr src_path = PATH(SRCDIR, file);
+            Cstr hdr_path = PATH(SRCDIR, CONCAT(NOEXT(file), ".h")); 
+            Cstr obj_path = PATH(OBJDIR, CONCAT(NOEXT(file), ".o")); 
+            int needs_built = 0;
+            if (!PATH_EXISTS(obj_path)) {
+                needs_built = 1;
+            } else {
+                if (PATH_EXISTS(hdr_path) && is_path1_modified_after_path2(hdr_path, obj_path))
+                    needs_built = 1;
+                if (is_path1_modified_after_path2(src_path, obj_path))
+                    needs_built = 1;
+            }
+            if (needs_built == 1) {
+                CMD(CC, CFLAGS, CLIBS, "-c", "-o", obj_path, src_path);
+            }
         }
     });
 }
