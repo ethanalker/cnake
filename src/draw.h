@@ -8,6 +8,6 @@ void write_str(const char *s);
 void write_chr(const char c);
 void write_int(const int x);
 void draw_char(const unsigned int x, const unsigned int y, const char c);
-void draw_screen(void);
+void refresh_screen(void);
 
 #endif // _DRAW_H

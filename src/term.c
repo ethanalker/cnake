@@ -36,6 +36,43 @@ VTIME: maximum time to wait before read() can return in 100 milliseconds
 
 struct termios orig_termios;
 
+// input buffer read/write pointers
+t_inputnode *wp = NULL;
+t_inputnode *rp = NULL;
+
+void build_inbuf(void)
+{
+    t_inputnode *start = malloc(sizeof(t_inputnode));
+    t_inputnode *head = start;
+    for (size_t i = 0; i < INBUF_SIZE - 1; i++) {
+        head->next = malloc(sizeof(t_inputnode));
+        head->c = '\0';
+        head = head->next;
+    }
+    head->next = start;
+    head->c = '\0';
+    rp = head;
+    wp = head;
+}
+
+void inbuf_write(char c)
+{
+    if (wp->next != rp && c != '\0') {
+        wp->c = c;
+        wp = wp->next;
+    }
+}
+
+char inbuf_read(void)
+{
+    char c = rp->c;
+    if (rp != wp && c != '\0') {
+        rp->c = '\0';
+        rp = rp->next;
+    } else return '\0';
+    return c;
+}
+
 void reset_screen(void)
 {
     write(1, "\x1b[2J", 4);
@@ -67,6 +104,8 @@ void setup_termios(void)
     if (tcsetattr(0, TCSAFLUSH, &raw) == -1) die("tcsetattr");
 
     write(1, "\x1b[?25l", 6); // hide cursor
+
+    build_inbuf();
 }
 
 char read_key(void)
@@ -93,6 +132,9 @@ char read_key(void)
     if (c >= 'A' && c <= 'Z')
         c |= 0x20; 
 
+    if (c == 'q')
+        exit(0);
+
     return c;
 }
 
@@ -100,7 +142,7 @@ char get_input(void)
 {
     char c;
     while ((c = read_key())) {
-        if (strchr(ALLOWED_KEYS, c)) break;
+        if (strchr(ALLOWED_KEYS, c)) inbuf_write(c);
     }
-    return c;
+    return inbuf_read();
 }

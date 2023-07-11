@@ -3,14 +3,15 @@
 #include "cnake.h"
 #include "draw.h"
 
-Node *head;
-Node *tail;
-Coord dir;
-// Coord berry;
+t_node *head;
+t_node *tail;
+t_node *free_tail = NULL;
+t_coord dir;
+// t_coord berry;
 
 void init_cnake(unsigned int x, unsigned int y)
 {
-    head = malloc(sizeof(Node));
+    head = malloc(sizeof(t_node));
     tail = head;
 
     head->x = x;
@@ -56,11 +57,18 @@ void parse_key(const char c)
 
 void add_head(void)
 {
-    Node *next = malloc(sizeof(Node));
+    t_node *next;
+    if (free_tail == NULL) {
+        next = malloc(sizeof(t_node));
+    } else {
+        next = free_tail;
+        free_tail = NULL;
+    }
 
     head->next = next;
     next->x = head->x + dir.x;
     next->y = head->y + dir.y;
+    next->next = NULL;
 
     head = next;
 
@@ -70,7 +78,8 @@ void add_head(void)
 void del_tail(void)
 {
     draw_char(tail->x, tail->y, ' ');
-    Node *prev_tail = tail;
+    t_node *prev_tail = tail;
     tail = prev_tail->next;
-    free(prev_tail);
+
+    free_tail = prev_tail;
 }

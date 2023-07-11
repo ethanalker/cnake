@@ -20,7 +20,7 @@ int main(void)
             del_tail();
         }
 
-        draw_screen();
+        refresh_screen();
         msleep(100);
 
         // when it comes time to check out of bounds, query position after movement and check if it matches the stored position

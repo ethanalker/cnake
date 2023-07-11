@@ -4,13 +4,13 @@
 typedef struct {
     int x;
     int y;
-} Coord;
+} t_coord;
 
 typedef struct cnakeNode {
     unsigned int x;
     unsigned int y;
     struct cnakeNode *next;
-} Node;
+} t_node;
 
 void init_cnake(unsigned int x, unsigned int y);
 void add_head();

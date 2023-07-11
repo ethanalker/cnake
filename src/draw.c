@@ -41,7 +41,7 @@ void draw_char(const unsigned int x, const unsigned int y, const char c)
     write_chr(c);
 }
 
-void draw_screen(void)
+void refresh_screen(void)
 {
     write(1, wbuf, strlen(wbuf));
     reset_buf();
