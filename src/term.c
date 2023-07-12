@@ -4,6 +4,8 @@
 #include <errno.h> // errno
 #include <string.h> // strchr
 
+#include <stdio.h> // tmp
+
 #include "term.h"
 #include "utils.h"
 
@@ -40,6 +42,7 @@ struct termios orig_termios;
 t_inputnode *wp = NULL;
 t_inputnode *rp = NULL;
 
+// builds a circular linked list to act as a queue
 void build_inbuf(void)
 {
     t_inputnode *start = malloc(sizeof(t_inputnode));
@@ -71,6 +74,17 @@ char inbuf_read(void)
         rp = rp->next;
     } else return '\0';
     return c;
+}
+
+void query_pos(void)
+{
+    char buf[15] = { '\0' };
+    char *bp = buf;
+    write(1, "\x1b[6n", 4);
+    do {
+        read(0, bp, 1);
+    } while (*bp++ != 'R');
+    printf("%ld", strlen(buf));
 }
 
 void reset_screen(void)
