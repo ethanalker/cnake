@@ -3,8 +3,7 @@
 #include <termios.h> // tcsetattr, tcgetattr, etc
 #include <errno.h> // errno
 #include <string.h> // strchr
-
-#include <stdio.h> // tmp
+#include <ctype.h> // isdigit
 
 #include "term.h"
 #include "utils.h"
@@ -76,15 +75,31 @@ char inbuf_read(void)
     return c;
 }
 
-void query_pos(void)
+void query_pos(size_t *x, size_t *y)
 {
-    char buf[15] = { '\0' };
-    char *bp = buf;
+    char buf[4] = { '\0' };
     write(1, "\x1b[6n", 4);
+    read(0, buf, 2);
+
+    char ystr[6] = { '\0' };
+    char *yp = ystr;
     do {
-        read(0, bp, 1);
-    } while (*bp++ != 'R');
-    printf("%ld", strlen(buf));
+        read(0, yp, 1);
+    } while (isdigit(*yp++));
+    buf[3] = *--yp;
+    *yp = '\0';
+
+    char xstr[6] = { '\0' };
+    char *xp = xstr;
+    do {
+        read(0, xp, 1);
+    } while (isdigit(*xp++));
+    *--xp = '\0';
+
+    if(!strncmp(buf, "\x1b[;", 3)) die("CPR (cursor position report)");
+
+    *x = atoi(xstr);
+    *y = atoi(ystr);
 }
 
 void reset_screen(void)
@@ -117,7 +132,8 @@ void setup_termios(void)
 
     if (tcsetattr(0, TCSAFLUSH, &raw) == -1) die("tcsetattr");
 
-    write(1, "\x1b[?25l", 6); // hide cursor
+    // hide cursor
+    write(1, "\x1b[?25l", 6); 
 
     build_inbuf();
 }
