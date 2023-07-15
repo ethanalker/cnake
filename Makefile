@@ -1,10 +1,10 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -pedantic -std=gnu99
+CFLAGS=-Wall -Wextra -pedantic -std=gnu99 -g
 LIBS=-lm
 
 SRC=src
 OBJ=obj
-FILES=cnake draw term utils
+FILES=cnake draw term utils io
 
 all: cnake
 
@@ -20,4 +20,13 @@ $(OBJ):
 clean:
 	rm $(OBJ)/*.o cnake
 
-.PHONY: all clean
+run: cnake
+	${TERM} -e ./$^ &
+
+gdb: run
+	sleep 3
+	sh -c 'gdb -p $$(pidof cnake)'
+
+debug: gdb
+
+.PHONY: all clean run gdb debug

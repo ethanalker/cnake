@@ -1,33 +1,53 @@
-#include <stdlib.h> // rand
+#include <stdlib.h>
+#include <time.h>
+#include <sys/prctl.h> // prctl
 
 #include "draw.h"
 #include "term.h"
+#include "io.h"
 #include "utils.h"
 #include "cnake.h"
 
-int main(void)
+int surplus;
+
+void init(void)
 {
     setup_termios();
-    init_cnake(50, 50);
+
+    t_coord init_pos = query_pos();
+    init_cnake(init_pos.x, init_pos.y > 1 ? init_pos.y - 1 : init_pos.y);
+    surplus = 5;
+
+    // allows any process to attach via ptrace, for debugging
+    prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY, 0, 0, 0);
+
+    inbuf_init();
+
+    srand(time(NULL));
+}
+
+int main(void)
+{
+    init();
 
     while (1) {
-        char c = get_input();
+        process_input();
 
-        parse_key(c);
-        add_head();
+        if (check_berry()) {
+            surplus += 3;
+            gen_berry();
+        }
 
-        if ((rand() % 2) == 1) {
+        if (surplus > 0) {
+            surplus--;
+        } else {
             del_tail();
         }
 
+        if (!add_head()) break;
+
         refresh_screen();
         msleep(100);
-
-        // when it comes time to check out of bounds, query position after movement and check if it matches the stored position
-        // if it doesn't, that means the move wasn't successful and you hit a wall
-        // this means it'll dynamically resize the window as the window size changes
-        // you can also kill yourself by shrinking the window, which is a feature not a bug. 
-
     }
 
     return 0;
