@@ -16,7 +16,7 @@ void init(void)
 
     t_coord init_pos = query_pos();
     init_cnake(init_pos.x, init_pos.y > 1 ? init_pos.y - 1 : init_pos.y);
-    surplus = 5;
+    surplus = 8;
 
     // allows any process to attach via ptrace, for debugging
     prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY, 0, 0, 0);
@@ -34,7 +34,7 @@ int main(void)
         process_input();
 
         if (check_berry()) {
-            surplus += 3;
+            surplus += 5;
             gen_berry();
         }
 
