@@ -29,7 +29,7 @@ $(OBJ):
 	mkdir $(OBJ)
 
 clean:
-	rm $(OBJ)/* $(BIN)
+	-rm $(OBJ)/* $(BIN)
 
 run: $(BIN)
 	${TERM} -e ./$^ > /dev/null 2>&1 &
