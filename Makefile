@@ -1,27 +1,38 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -pedantic -std=gnu99 -g
-LIBS=-lm
+CFLAGS=-Wall -Wextra -pedantic -std=gnu99
+DFLAGS=-g
+RFLAGS=-O2 -DNDEBUG
+CLIBS=-lm
 
 SRC=src
 OBJ=obj
-FILES=cnake draw term utils io
+SRCS=$(wildcard $(SRC)/*.c)
+OBJS=$(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(SRCS))
+BIN=cnake
 
-all: cnake
+all: build
 
-cnake: $(patsubst %,$(OBJ)/%.o,$(FILES)) $(SRC)/main.c
-	$(CC) $(CFLAGS) $(LIBS) -o $@ $^
+build: CFLAGS:=$(CFLAGS) $(DFLAGS)
+build: $(BIN)
 
-$(OBJ)/%.o: $(SRC)/%.c $(SRC)/%.h | $(OBJ)
-	$(CC) $(CFLAGS) $(LIBS) -c -o $@ $(patsubst $(OBJ)/%.o,$(SRC)/%.c,$@)
+release: CFLAGS:=$(CFLAGS) $(RFLAGS)
+release: clean
+release: $(BIN)
+
+$(BIN): $(OBJS)
+	$(CC) $(CFLAGS) $(CLIBS) -o $@ $^
+
+$(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
+	$(CC) $(CFLAGS) $(CLIBS) -c -o $@ $^
 
 $(OBJ):
 	mkdir $(OBJ)
 
 clean:
-	rm $(OBJ)/*.o cnake
+	rm $(OBJ)/* $(BIN)
 
-run: cnake
-	${TERM} -e ./$^ &
+run: $(BIN)
+	${TERM} -e ./$^ > /dev/null 2>&1 &
 
 gdb: run
 	sleep 3

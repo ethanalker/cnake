@@ -20,8 +20,10 @@ void init(void)
     init_cnake(init_pos.x, init_pos.y > 1 ? init_pos.y - 1 : init_pos.y);
     surplus = 8;
 
+#ifndef NDEBUG
     // allows any process to attach via ptrace, for debugging
     prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY, 0, 0, 0);
+#endif // NDEBUG
 
     inbuf_init();
 
