@@ -1,4 +1,5 @@
-#include <stdlib.h>
+#include <stdlib.h> // srand
+#include <time.h> // time(), for seeding
 #include <sys/prctl.h> // prctl
 
 #include "draw.h"
