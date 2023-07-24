@@ -42,17 +42,17 @@ void init_cnake(unsigned int x, unsigned int y)
 
 void draw_berry()
 {
-    draw_char(berry.x, berry.y, 'O', FONT_FX(RED_FG, BOLD));
+    draw_str(berry.x, berry.y, "O", FONT_FX(RED_FG, BOLD));
 }
 
 void draw_head()
 {
-    draw_char(head->x, head->y, '0', FONT_FX(RESET));
+    draw_str(head->x, head->y, "0", FONT_FX(RESET));
 }
 
 void draw_tail()
 {
-    draw_char(tail->x, tail->y, ' ', FONT_FX(RESET));
+    draw_str(tail->x, tail->y, " ", FONT_FX(RESET));
 }
 
 // returns nonzero if berry grabbed

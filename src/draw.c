@@ -19,12 +19,6 @@ void write_str(char **pbuf, const char *s)
     (*pbuf) += strlen(s);
 }
 
-void write_chr(char **pbuf, const char c)
-{
-    strncat(*pbuf, &c, 1);
-    (*pbuf)++;
-}
-
 void write_int(char **pbuf, const int x)
 {
     sprintf(*pbuf, "%d", x);
@@ -35,16 +29,16 @@ void move_cursor(char **pbuf, const unsigned int x, const unsigned int y)
 {
     write_str(pbuf, "\x1b[");
     write_int(pbuf, y);
-    write_chr(pbuf, ';');
+    write_str(pbuf, ";");
     write_int(pbuf, x);
-    write_chr(pbuf, 'H');
+    write_str(pbuf, "H");
 }
 
-void draw_char(const unsigned int x, const unsigned int y, const char c, const char *fx)
+void draw_str(const unsigned int x, const unsigned int y, const char *s, const char *fx)
 {
     write_str(&pwbuf, fx);
     move_cursor(&pwbuf, x, y);
-    write_chr(&pwbuf, c);
+    write_str(&pwbuf, s);
 }
 
 void refresh_screen(void)

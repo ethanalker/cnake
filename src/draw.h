@@ -43,10 +43,9 @@
 
 void reset_buf(void);
 void write_str(char **p, const char *s);
-void write_chr(char **p, const char c);
 void write_int(char **p, const int x);
 void move_cursor(char **p, const unsigned int x, const unsigned int y);
-void draw_char(const unsigned int x, const unsigned int y, const char c, const char *fx);
+void draw_str(const unsigned int x, const unsigned int y, const char *s, const char *fx);
 void refresh_screen(void);
 void move_now(const unsigned int x, const unsigned int y);
 
