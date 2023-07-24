@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <time.h>
 #include <sys/prctl.h> // prctl
 
 #include "draw.h"
@@ -7,8 +6,11 @@
 #include "io.h"
 #include "utils.h"
 #include "cnake.h"
+#include "wait.h"
 
 int surplus;
+
+int score = 0;
 
 void init(void)
 {
@@ -31,11 +33,14 @@ int main(void)
     init();
 
     while (1) {
+        set_wait_until();
         process_input();
 
         if (check_berry()) {
             surplus += 5;
+            dec_wait_ns();
             gen_berry();
+            score++;
         }
 
         if (surplus > 0) {
@@ -47,7 +52,7 @@ int main(void)
         if (!add_head()) break;
 
         refresh_screen();
-        msleep(100);
+        wait();
     }
 
     return 0;
