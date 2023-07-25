@@ -1,5 +1,6 @@
 #include <stdlib.h> // srand
 #include <time.h> // time(), for seeding
+#include <stdio.h>
 #include <sys/prctl.h> // prctl
 
 #include "draw.h"
@@ -57,6 +58,7 @@ int main(void)
         refresh_screen();
         wait();
     }
+    printf("%d\r\n", score);
 
     return 0;
 }
