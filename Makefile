@@ -40,4 +40,4 @@ gdb: run
 
 debug: gdb
 
-.PHONY: all clean run gdb debug
+.PHONY: all build release clean run gdb debug
