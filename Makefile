@@ -32,7 +32,7 @@ clean:
 	-rm $(OBJ)/* $(BIN)
 
 run: $(BIN)
-	${TERM} -e ./$^ > /dev/null 2>&1 &
+	-${TERM} -e ./$^ > /dev/null 2>&1 &
 
 gdb: run
 	sleep 3
