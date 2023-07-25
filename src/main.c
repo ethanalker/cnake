@@ -58,6 +58,9 @@ int main(void)
         refresh_screen();
         wait();
     }
+    clear_berry();
+    refresh_screen();
+
     printf("%d\r\n", score);
 
     return 0;

@@ -24,6 +24,7 @@ int check_berry(void);
 void draw_head(void);
 void draw_tail(void);
 void draw_berry(void);
+void clear_berry(void);
 void set_board(size_t x, size_t y, uint8_t b);
 uint8_t get_board(size_t x, size_t y);
 int check_bounds(int x, int y);

@@ -40,19 +40,27 @@ void init_cnake(unsigned int x, unsigned int y)
     refresh_screen();
 }
 
-void draw_berry()
+void draw_berry(void)
 {
     draw_str(berry.x, berry.y, "O", FONT_FX(RED_FG, BOLD));
 }
 
-void draw_head()
+void draw_head(void)
 {
     draw_str(head->x, head->y, "0", FONT_FX(RESET));
 }
 
-void draw_tail()
+void draw_tail(void)
 {
     draw_str(tail->x, tail->y, " ", FONT_FX(RESET));
+}
+
+void clear_berry(void)
+{
+    draw_str(berry.x, berry.y, " ", FONT_FX(RESET));
+    // this is just to move the cursor back to the head
+    // the draw api is fucked, fix later
+    draw_str(head->x, head->y, "", ""); 
 }
 
 // returns nonzero if berry grabbed
