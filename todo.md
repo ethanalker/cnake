@@ -1,0 +1,5 @@
+- fix draw api
+- change header files so they only expose public api
+- try to improve io so inputs drop less
+    - try to make it not happen at all?
+- probably more refactoring
