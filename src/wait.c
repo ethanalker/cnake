@@ -6,7 +6,7 @@
 
 #define WAIT_MAX 100 * 1000 * 1000
 #define WAIT_MIN 15 * 1000 * 1000
-#define WAIT_RATE 15
+#define WAIT_RATE 20
 
 uint64_t wait_ns = WAIT_MAX;
 struct timespec now;
